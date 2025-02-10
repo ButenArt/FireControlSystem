@@ -25,7 +25,7 @@ void TCP_server::newConnection()
 void TCP_server::readCommonTcpData()
 {
     bool processedHeader = false;
-    TCPHeader displayHeader;
+    TCPHeader Header;
 
     if(socket->state() == QAbstractSocket::ConnectedState)
     {
@@ -41,23 +41,23 @@ void TCP_server::readCommonTcpData()
                 header_stream.setByteOrder(QDataStream::LittleEndian);
                 header_stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
-                header_stream >> displayHeader.Mark;
-                header_stream >> displayHeader.PacketType;
-                header_stream >> displayHeader.DataSize;
+                header_stream >> Header.Mark;
+                header_stream >> Header.PacketType;
+                header_stream >> Header.DataSize;
                 processedHeader = true;
                 availabeBytes = availabeBytes - header_length;
             }
 
-            if((processedHeader) && (availabeBytes >= displayHeader.DataSize))
+            if((processedHeader) && (availabeBytes >= Header.DataSize))
             {
-                QByteArray packet_data = socket->read(displayHeader.DataSize);
+                QByteArray packet_data = socket->read(Header.DataSize);
                 QDataStream data_stream(packet_data);
                 data_stream.setByteOrder(QDataStream::LittleEndian);
                 data_stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-                switch (displayHeader.PacketType)
+                switch (Header.PacketType)
                 {
-                case 421:  //421 для танка, 420 нужно игнорировать
-                    getDisplayDataPacket(data_stream);
+                case 1001:
+                    getShotDataPacket(data_stream);
                     break;
                 default:
                     break;
@@ -69,11 +69,11 @@ void TCP_server::readCommonTcpData()
     }
 }
 
-void TCP_server::getDisplayDataPacket(QDataStream &_stream)
+void TCP_server::getShotDataPacket(QDataStream &_stream)
 {
-    displayPacket.PacketReady = true;
-    _stream >> displayPacket.yaw;
-    _stream >> displayPacket.SwitchGPK;
-    emit readyYaw(displayPacket.yaw);
-    emit readySwitch(displayPacket.SwitchGPK);
+    shotPacket.PacketReady = true;
+    _stream >> shotPacket.shot;
+    if (shotPacket.shot){
+        emit readyShot(shotPacket.shot);
+    }
 }

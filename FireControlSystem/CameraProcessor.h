@@ -21,7 +21,7 @@ public:
     void stop();
 
 signals:
-    void frameReady(const QImage &image, double angle);
+    void frameReady(const QImage &image, double angle, double pitch);
 
 private slots:
     void processFrame();
@@ -35,8 +35,12 @@ private:
     cv::dnn::Net net;
     std::vector<std::string> classNames;
 
+    double angle = 0.0;
+    double pitchAngle = 0.0;
+
     QImage matToQImage(const cv::Mat &mat);
     double calculateAngle(int centerX, int imageWidth);
+    double calculatePitchAngle(int centerY, int imageHeight);
     void loadYOLOModel();
 };
 

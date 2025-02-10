@@ -15,6 +15,7 @@ SOURCES += \
     SettingsFile.cpp \
     StabilizationSystem.cpp \
     TcpServer.cpp \
+    UdpServer.cpp \
     main.cpp \
     FCS_mainwindow.cpp
 
@@ -25,7 +26,8 @@ HEADERS += \
     Logging.h \
     SettingsFile.h \
     StabilizationSystem.h \
-    TcpServer.h
+    TcpServer.h \
+    UdpServer.h
 
 FORMS += \
     FCS_mainwindow.ui

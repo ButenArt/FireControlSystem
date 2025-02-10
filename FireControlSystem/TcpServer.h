@@ -17,19 +17,18 @@ public:
 
     void setPort(int p) { port = p; }
 
-    DataPacket displayPacket;
+    DataPacket shotPacket;
     QTcpServer *server;
     QTcpSocket *socket;
     int port = 20001;//8003;
 
-    void getDisplayDataPacket(QDataStream &);
+    void getShotDataPacket(QDataStream &);
 
 public slots:
     void newConnection();
     void readCommonTcpData();
 signals:
-    void readyYaw(float yaw);
-    void readySwitch(bool switchgpk);
+    void readyShot(bool shot);
 };
 
 #endif // TCPSERVER_H

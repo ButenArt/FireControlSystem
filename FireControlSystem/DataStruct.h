@@ -15,8 +15,7 @@ struct TCPHeader
 struct DataPacket
 {
     bool PacketReady = 0;
-    float yaw = 0;                 // Курс
-    bool SwitchGPK = false;        // Тумблер включения
+    bool shot = false;        // Тумблер включения
 };
 
 #endif // DATASTRUCT_H
