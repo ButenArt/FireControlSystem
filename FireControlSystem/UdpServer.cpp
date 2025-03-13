@@ -54,6 +54,7 @@ void UDP_server::readPendingDatagrams()
 
 void UDP_server::sendData(const QByteArray &data)
 {
+    qDebug() << "Отправка пакета (HEX) - 2:" << data.toHex(' ');
     socket->writeDatagram(data, address, port);
 }
 

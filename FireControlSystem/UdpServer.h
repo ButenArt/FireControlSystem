@@ -13,12 +13,13 @@ class UDP_server: public QObject
 public:
     explicit UDP_server(QObject *parent = nullptr);
     ~UDP_server();
-    void setPort(int p) { port = p; }
-    void setAddress(QString p) { address = p; }
+    void setPort(int p) {
+        port = p; }
+    void setAddress(QString p) { address = QHostAddress(p); }
 private:
     DataPacket displayPacket;
     QUdpSocket *socket;
-    int port = 20001;
+    int port = 2222;
     QHostAddress address;
     void getDataPacket(QDataStream &);
 public slots:

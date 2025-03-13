@@ -20,7 +20,7 @@ public:
     DataPacket shotPacket;
     QTcpServer *server;
     QTcpSocket *socket;
-    int port = 20001;//8003;
+    int port = 8080;//8003;
 
     void getShotDataPacket(QDataStream &);
 

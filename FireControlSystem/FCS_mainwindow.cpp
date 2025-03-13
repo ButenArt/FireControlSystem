@@ -85,12 +85,25 @@ void MainWindow::updateFrame(const QImage &image, double angle, double pitch)
 
 void MainWindow::readyShotSlot(bool shot){
     QByteArray data;
-    QDataStream data_stream(&data, QIODevice::WriteOnly);
-    data_stream.setByteOrder(QDataStream::LittleEndian);
-    data_stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-    data_stream << static_cast<quint16>(azimuthAngle);
-    data_stream << static_cast<quint16>(pitchAngle);
-    data_stream << static_cast<quint16>(shot);
+
+    data.append(static_cast<BYTE>(0x01));
+    data.append(static_cast<BYTE>(0x01));
+    data.append(static_cast<BYTE>(90 + pitchAngle));
+    data.append(static_cast<BYTE>(90 + azimuthAngle));
+    /*
+    // Формируем пакет данных
+    data.append(static_cast<char>(0x01));
+    data.append(static_cast<char>(0x31));
+    data.append(static_cast<char>(0x02));
+    data.append(static_cast<char>(res));
+    //data_stream.writeRawData(reinterpret_cast<char*>(&res), sizeof(res));  // Передаём 4 байта res
+    data.append(static_cast<char>(0x03));
+    data.append(static_cast<char>(type));
+    //data_stream.writeRawData(reinterpret_cast<char*>(&type), sizeof(type)); // Передаём 4 байта type
+    data.append(static_cast<char>(0x04));*/
+
+    // Выводим содержимое пакета в HEX для отладки
+    qDebug() << "Отправка пакета (HEX) - 1:" << data.toHex(' ');
     emit readyShot(data);
 }
 
