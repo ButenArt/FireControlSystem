@@ -44,7 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
     UdpServer->setAddress(ini->IP_Gun());
     UdpServer->setPort(ini->PORT_Gun());
 
-    connect(TcpServer, &TCP_server::readyShot, this, &MainWindow::readyShotSlot);
+    sendTimer = new QTimer();
+    sendTimer->start(20);
+    connect(sendTimer, &QTimer::timeout, this, &MainWindow::readyShotSlot);
     connect(this, &MainWindow::readyShot, UdpServer, &UDP_server::sendData);
 }
 
@@ -71,9 +73,8 @@ void MainWindow::updateFrame(const QImage &image, double angle, double pitch)
                 return;
             }
             if (!ini->ManualMode()){
-                azimuthAngle = angle;
-                pitchAngle = pitch;
-                readyShotSlot(false);
+                azimuthAngle = 90 - angle;
+                pitchAngle = 90 - pitch;
             }
             QImage fixedImage = image.convertToFormat(QImage::Format_RGB32);
             //videoLabel->setText(QString("Angle: %1°").arg(angle));
@@ -83,24 +84,18 @@ void MainWindow::updateFrame(const QImage &image, double angle, double pitch)
         }, Qt::QueuedConnection);
 }
 
-void MainWindow::readyShotSlot(bool shot){
+void MainWindow::readyShotSlot(){
+
+    if (!ini->ManualMode()){
+        shot = TcpServer->shotPacket.shot;
+    }
+
     QByteArray data;
 
     data.append(static_cast<BYTE>(0x01));
-    data.append(static_cast<BYTE>(0x01));
-    data.append(static_cast<BYTE>(90 + pitchAngle));
-    data.append(static_cast<BYTE>(90 + azimuthAngle));
-    /*
-    // Формируем пакет данных
-    data.append(static_cast<char>(0x01));
-    data.append(static_cast<char>(0x31));
-    data.append(static_cast<char>(0x02));
-    data.append(static_cast<char>(res));
-    //data_stream.writeRawData(reinterpret_cast<char*>(&res), sizeof(res));  // Передаём 4 байта res
-    data.append(static_cast<char>(0x03));
-    data.append(static_cast<char>(type));
-    //data_stream.writeRawData(reinterpret_cast<char*>(&type), sizeof(type)); // Передаём 4 байта type
-    data.append(static_cast<char>(0x04));*/
+    data.append(static_cast<BYTE>(shot));
+    data.append(static_cast<BYTE>(azimuthAngle));
+    data.append(static_cast<BYTE>(pitchAngle));
 
     // Выводим содержимое пакета в HEX для отладки
     qDebug() << "Отправка пакета (HEX) - 1:" << data.toHex(' ');
@@ -116,38 +111,34 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         case Qt::Key_Up:
         {
-            pitchAngle += 0.1;
-            if (pitchAngle > 20)
-                pitchAngle = 20;
-            readyShotSlot(false);
+            pitchAngle -= 1;
+            if (pitchAngle < 0)
+                pitchAngle = 0;
         }
         break;
         case Qt::Key_Down:
         {
-            pitchAngle -= 0.1;
-            if (pitchAngle < -20)
-                pitchAngle = -20;
-            readyShotSlot(false);
+            pitchAngle += 1;
+            if (pitchAngle > 130)
+                pitchAngle = 130;
         }
         break;
         case Qt::Key_Left:
         {
-            azimuthAngle -= 0.1;
-            if (azimuthAngle < -25)
-                azimuthAngle = -25;
-            readyShotSlot(false);
+            azimuthAngle -= 1;
+            if (azimuthAngle < 0)
+                azimuthAngle = 0;
         }
         break;
         case Qt::Key_Right:
         {
-            azimuthAngle += 0.1;
-            if (azimuthAngle > 25)
-                azimuthAngle = 25;
-            readyShotSlot(false);
+            azimuthAngle += 1;
+            if (azimuthAngle > 180)
+                azimuthAngle = 180;
         }
         break;
         case Qt::Key_Tab:
-            readyShotSlot(true);
+            shot = true;
         break;
     }
 }

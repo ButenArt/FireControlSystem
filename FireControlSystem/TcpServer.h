@@ -27,8 +27,6 @@ public:
 public slots:
     void newConnection();
     void readCommonTcpData();
-signals:
-    void readyShot(bool shot);
 };
 
 #endif // TCPSERVER_H

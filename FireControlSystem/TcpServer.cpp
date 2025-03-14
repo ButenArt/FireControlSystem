@@ -73,7 +73,4 @@ void TCP_server::getShotDataPacket(QDataStream &_stream)
 {
     shotPacket.PacketReady = true;
     _stream >> shotPacket.shot;
-    if (shotPacket.shot){
-        emit readyShot(shotPacket.shot);
-    }
 }
