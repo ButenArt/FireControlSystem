@@ -1,5 +1,5 @@
 #include "FCS_mainwindow.h"
-#include "qdebug.h"
+#include <QDebug>
 #include <QVBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent)
